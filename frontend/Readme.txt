@@ -31,3 +31,6 @@
 
 -- INSTALL ZUSTAND TO FETCHING DATA
 - npm install zustand
+
+-- INSTALL SOCKET.IO CLIENT
+- npm i socket.io-client
