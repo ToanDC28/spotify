@@ -4,7 +4,7 @@ import { Message } from "../models/message.model.js";
 export const initializeSocket = (server) => {
     const io = new Server(server, {
         cors: {
-            origin: process.env.CLIENT_URL,
+            origin: "http://localhost:3000",
             credentials: true,
         },
     });
@@ -48,12 +48,18 @@ export const initializeSocket = (server) => {
             }
         })
         socket.on("disconnect", () => {
-            const userId = Array.from(userSocket.entries()).find(([userId, socketId]) => socketId === socket.id)[0];
-            userSocket.delete(userId);
-            userActivities.delete(userId);
-            io.emit("user_disconnected", userId);
-            io.emit("users_online", Array.from(userSocket.keys()));
-            io.emit("users_activities", Array.from(userActivities.entries()));
+            let disconnectedUserId;
+			for (const [userId, socketId] of userSocket.entries()) {
+				if (socketId === socket.id) {
+					disconnectedUserId = userId;
+					userSocket.delete(userId);
+					userActivities.delete(userId);
+					break;
+				}
+			}
+			if (disconnectedUserId) {
+				io.emit("user_disconnected", disconnectedUserId);
+			}
         })
     })
 }

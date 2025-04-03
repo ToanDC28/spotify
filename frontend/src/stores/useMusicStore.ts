@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/lib/axios";
-import { Album, NewSongRequest, Song, Status } from "@/types";
+import { Album, Song, Status } from "@/types";
 import { create } from "zustand";
 
 interface MusicStore {

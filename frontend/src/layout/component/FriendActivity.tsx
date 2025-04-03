@@ -4,17 +4,16 @@ import { useChatStore } from '@/stores/useChatStore'
 import { useUser } from '@clerk/clerk-react';
 import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { HeadphonesIcon, Music, Users } from 'lucide-react';
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 const FriendActivity = () => {
 
-    const { fetchUser, users } = useChatStore();
+    const { fetchUser, users, onlineUsers, userActivities } = useChatStore();
     const {user} = useUser();
     useEffect(() => {
         if(user) fetchUser();
     }, [fetchUser, user]);
-
-    const isPlaying = true;
+    console.log(users);
   return (
     <div className='h-full bg-zinc-900 rounded-lg flex flex-col'>
         <div className='p-4 flex justify-between items-center border-b border-zinc-800'>
@@ -26,37 +25,46 @@ const FriendActivity = () => {
         {!user && <LoginPrompt />}
         <ScrollArea className='flex-1'>
             <div className='p-4 space-y-4'>
-                {users.map((user) => (
-                    <div key={user._id} className='cursor-pointer hover:bg-zinc-800/50 p-3 rounded-md transition-colors group'>
-                        <div className='flex items-start gap-4'>
-                            <div className='relative'>
-                                <Avatar className='w-10 h-10 border border-zinc-800'>
-                                    <AvatarImage src={user.imageUrl} alt={user.fullname} />
-                                    <AvatarFallback>{user.fullname[0]}</AvatarFallback> 
-                                </Avatar>
-                                <div className='absolute bottom-0 right-0 w-3 h-3 bg-zinc-500 border-2 border-zinc-900 rounded-full' aria-hidden='true' />
-                            </div>
-                            <div className='flex-1 min-w-0'>
-                                <div className='flex items-center gap-2'>
-                                    <span className='font-medium text-sm text-white'>
-                                        {user.fullname}
-                                    </span>
-                                    {isPlaying && 
-                                        <Music className='size-3.5 text-emerald-500 shrink-0' />
-                                    }
-                                </div>
-                                {isPlaying ? (
-                                    <div className='mt-1'>
-                                        <div className='mt-1 text-sm text-white font-medium truncate'>Cardigan</div>
-                                        <div className='text-xs text-zinc-400 truncate'>by Taylor Swift</div>
+                {users.map((user) => {
+                    const activity = userActivities.get(user.clerkId);
+                    const isPlaying = activity && activity.includes('Listening to');
+                    return (
+                        <div>
+                            {isPlaying && (
+                                <div key={user._id} className='cursor-pointer hover:bg-zinc-800/50 p-3 rounded-md transition-colors group'>
+                                <div className='flex items-start gap-4'>
+                                    <div className='relative'>
+                                        <Avatar className='w-10 h-10 border border-zinc-800'>
+                                            <AvatarImage src={user.imageUrl} alt={user.fullname} />
+                                            <AvatarFallback>{user.fullname[0]}</AvatarFallback> 
+                                        </Avatar>
+                                        <div className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-zinc-900 rounded-full 
+                                            ${onlineUsers.has(user.clerkId) ? "bg-green-500" : "bg-zinc-500"}`} aria-hidden='true' />
                                     </div>
-                                ) : (
-                                    <div className='mt-1 text-xs text-zinc-400'>Idle</div>
-                                )}
-                            </ div>
+                                    <div className='flex-1 min-w-0'>
+                                        <div className='flex items-center gap-2'>
+                                            <span className='font-medium text-sm text-white'>
+                                                {user.fullname}
+                                            </span>
+                                            {isPlaying && 
+                                                <Music className='size-3.5 text-emerald-500 shrink-0' />
+                                            }
+                                        </div>
+                                        {isPlaying ? (
+                                            <div className='mt-1'>
+                                                <div className='mt-1 text-sm text-white font-medium truncate'>{activity.replace('Listening to ', '').split(' by ')[0]}</div>
+                                                <div className='text-xs text-zinc-400 truncate'>{activity.split(' by ')[1]}</div>
+                                            </div>
+                                        ) : (
+                                            <div className='mt-1 text-xs text-zinc-400'>Idle</div>
+                                        )}
+                                    </ div>
+                                </div>
+                            </div>
+                            )}
                         </div>
-                    </div>
-                ))}
+                    )
+                })}
             </div>
         </ScrollArea>
     </div>

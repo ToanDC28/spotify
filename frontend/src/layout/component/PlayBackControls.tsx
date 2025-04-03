@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { formatDuration } from "@/pages/album/AlbumPage";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import {
     Laptop2,

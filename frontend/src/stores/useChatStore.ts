@@ -19,7 +19,7 @@ interface ChatStore {
   disconnectSocket: () => void;
   sendMessage: (senderId: string, receiverId: string, content: string) => void;
 }
-const url = import.meta.env.BASE_URL;
+const url = "http://localhost:5000";
 const socket = io(url, {
   autoConnect: false, // only connect when user is authenticated
   withCredentials: true,
@@ -28,7 +28,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   users: [],
   isLoading: false,
   error: null,
-  socket: null,
+  socket: socket,
   isConnected: false,
   onlineUsers: new Set<string>(),
   userActivities: new Map<string, string>(),
@@ -52,13 +52,19 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       socket.auth = { userID };
       socket.connect();
       socket.emit("user_connected", userID);
-      socket.on("user_online", (users: string[]) => {
+      socket.on("users_online", (users: string[]) => {
         set({ onlineUsers: new Set(users) });
       });
 
-      socket.on("users_activities", (userActivities: Map<string, string>) => {
-        set({ userActivities });
+      socket.on("users_activities", (userActivities: [string, string][]) => {
+        set({ userActivities: new Map(userActivities) });
       });
+
+      socket.on("user_connected", (userId:string) => {
+        set((state) => ({
+          onlineUsers: new Set([...state.onlineUsers, userId]),
+        }))
+      })
 
       socket.on("user_disconnected", (userId: string) => {
         set((state) => {
@@ -67,7 +73,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           return { onlineUsers: newOnlineUsers };
         });
       });
-      socket.on("message_received", (message: Message) => {
+
+      socket.on("receive_message", (message: Message) => {
         set((state) => ({
           messages: [...state.messages, message],
         }));
@@ -78,7 +85,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         }));
       });
       socket.on(
-        "activity_updated",
+        "activities_updated",
         ({ userId, activity }: { userId: string; activity: string }) => {
           set((state) => ({
             userActivities: new Map(state.userActivities.set(userId, activity)),
