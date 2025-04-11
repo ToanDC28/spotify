@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/table";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { PaginationRequest } from "@/types";
-import { Trash2 } from "lucide-react";
+import { Calendar, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const SongsTabContent = ({pageNumber, pageSize}: PaginationRequest) => {
-  const { songs, fetchAllSongs, deleteSong } = useMusicStore();
+  const { songs, fetchAllSongs, deleteSong, createSongSuccess } = useMusicStore();
   const [ currentPage, setCurrentPage ] = useState(1);
   const nextPage = () => {
     if(songs.length < pageSize) return;
@@ -36,7 +36,7 @@ const SongsTabContent = ({pageNumber, pageSize}: PaginationRequest) => {
   }
   useEffect(() => {
     fetchAllSongs(currentPage, pageSize);
-  }, [currentPage, fetchAllSongs, pageSize]);
+  }, [currentPage, fetchAllSongs, pageSize, createSongSuccess]);
   return (
     <>
     <div className="w-full bg-zinc-800/50">
@@ -53,12 +53,17 @@ const SongsTabContent = ({pageNumber, pageSize}: PaginationRequest) => {
         <TableBody>
           {songs.map((song) => (
             <TableRow key={song._id}>
-              <TableHead className="w-[100px]">
-                <img src={song.imageUrl} className="p-2" alt={song.title} />
+              <TableHead>
+                <img src={song.imageUrl} className="size-10 rounded object-cover" alt={song.title} />
               </TableHead>
-              <TableHead>{song.title}</TableHead>
+              <TableHead className="font-medium">{song.title}</TableHead>
               <TableHead>{song.artist}</TableHead>
-              <TableHead>{song.createdAt.split("T")[0]}</TableHead>
+              <TableHead>
+                <span className="inline-flex items-center gap-1">
+                  <Calendar  className="size-4"/>
+                {song.createdAt.split("T")[0]}
+                </span>
+              </TableHead>
               <TableHead>
                 <Button
                   variant={"ghost"}

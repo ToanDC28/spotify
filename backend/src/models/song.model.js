@@ -13,6 +13,14 @@ const songSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    imagePublicId: {
+        type: String,
+        require: true,
+    },
+    audioPublicId: {
+        type: String,
+        require: true,
+    },
     audioUrl: {
         type: String,
         require: true,

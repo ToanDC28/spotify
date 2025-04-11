@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useMusicStore } from "@/stores/useMusicStore";
-import { Calendar, Trash } from "lucide-react";
+import { Calendar, Music, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const AlbumsTabContent = () => {
-  const { albums, deleteAlbum, message, fetchAllAlbums } = useMusicStore();
+  const { albums, deleteAlbum, createAlbumSuccess, fetchAllAlbums } = useMusicStore();
   const [currentPage, setCurrentPage] = useState(1);
 
   const nextPage = () => {
@@ -25,7 +25,7 @@ const AlbumsTabContent = () => {
 
   useEffect(() => {
     fetchAllAlbums(currentPage, 5);
-  }, [currentPage, fetchAllAlbums ])
+  }, [currentPage, fetchAllAlbums, createAlbumSuccess ])
   return (
     <>
     <Table>
@@ -44,12 +44,22 @@ const AlbumsTabContent = () => {
           albums.map((album) => (
             <TableRow key={album._id}>
               <TableHead>
-                <img className="p-4" src={album.imageUrl} alt={album.title} />
+                <img className="size-10 rounded object-cover" src={album.imageUrl} alt={album.title} />
               </TableHead>
-              <TableHead>{album.title}</TableHead>
+              <TableHead className="font-medium">{album.title}</TableHead>
               <TableHead>{album.artist}</TableHead>
-              <TableHead><Calendar />{album.releaseYear}</TableHead>
-              <TableHead>{album.songs.length}</TableHead>
+              <TableHead>
+                <span  className="inline-flex items-center gap-1">
+                <Calendar className="size-4"/>
+                {album.releaseYear}
+                </span>
+              </TableHead>
+              <TableHead>
+                <span className="inline-flex items-center gap-1">
+                <Music className="size-4" /> 
+                {album.songs.length}
+                </span>
+              </TableHead>
               <TableHead>
                 <Button variant={"secondary"}
                 size={"sm"} 

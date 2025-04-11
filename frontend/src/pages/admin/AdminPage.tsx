@@ -24,6 +24,7 @@ const AdminPage = () => {
     // fetch status
     fetchStatus();
   }, [fetchAllAlbums, fetchAllSongs, fetchStatus]);
+
   if (!isAdmin && isLoading) {
     return <div>Unauthorize</div>;
   }

@@ -13,6 +13,8 @@ interface MusicStore {
     trendingSongs: Song[];
     status: Status;
     message: string;
+    createSongSuccess: boolean;
+    createAlbumSuccess: boolean;
     fetchAlbums: () => Promise<void>;
     fetchSongs: () => Promise<void>;
     fetchAlbumById: (id: string) => Promise<void>;
@@ -43,6 +45,8 @@ export const useMusicStore = create<MusicStore>((set) => ({
         users: 0,
         uniqueArtist: 0
     },
+    createSongSuccess: false,
+    createAlbumSuccess: false,
     message: '',
     fetchAlbums: async () => {
         set({ isLoading: true, error: null });
@@ -162,7 +166,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
         }
     },
     addSong: async (song: FormData) => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, error: null, createSongSuccess: false });
         try {
             const response = await axiosInstance.post("/admin/song/create", song, {
                 headers:{
@@ -170,7 +174,8 @@ export const useMusicStore = create<MusicStore>((set) => ({
                 }
             });
             const data = await response.data;
-            set({ message: data.message });
+            console.log(data);
+            set({ message: data.message, createSongSuccess: true });
         } catch (error:any) {
             set({ error: error.response.data.message });
             console.log("Error in addSong: ", error);
@@ -179,7 +184,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
         }
     },
     addAlbum: async (album: FormData) => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, error: null, createAlbumSuccess: false });
         try {
             const response = await axiosInstance.post("/admin/album/create", album, {
                 headers:{
@@ -187,7 +192,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
                 }
             });
             const data = await response.data;
-            set({ message: data.message });
+            set({ message: data.message, createAlbumSuccess: true });
         } catch (error:any) {
             set({ error: error.response.data.message });
             console.log("Error in addAlbum: ", error);
@@ -196,11 +201,11 @@ export const useMusicStore = create<MusicStore>((set) => ({
         }
     },
     deleteSong: async (id: string) => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, error: null, createSongSuccess: false });
         try {
             const response = await axiosInstance.delete(`/admin/song/delete/${id}`);
             const data = await response.data;
-            set({ message: data.message });
+            set({ message: data.message, createSongSuccess: true });
         } catch (error:any) {
             set({ error: error.response.data.message });
             console.log("Error in deleteSong: ", error);
@@ -209,11 +214,11 @@ export const useMusicStore = create<MusicStore>((set) => ({
         }
     },
     deleteAlbum: async (id: string) => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, error: null, createAlbumSuccess: false });
         try {
             const response = await axiosInstance.delete(`/admin/album/delete/${id}`);
             const data = await response.data;
-            set({ message: data.message });
+            set({ message: data.message, createAlbumSuccess: true });
         } catch (error:any) {
             set({ error: error.response.data.message });
             console.log("Error in deleteAlbum: ", error);

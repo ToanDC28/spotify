@@ -13,6 +13,10 @@ const albumSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    imagePublicId: {
+        type: String,
+        require: true,
+    },
     releaseYear: {
         type: Number,
         require: true,

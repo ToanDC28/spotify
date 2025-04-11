@@ -5,7 +5,7 @@ import { getAllSongs, getFeatureSongs, getMadeForYou, getTrending } from "../con
 const router = Router();
 
 router.get("/:pageNum&:pageSize", protectRoute, requireAdmin, getAllSongs);
-router.get("/feature", protectRoute, requireAdmin, getFeatureSongs);
-router.get("/made-for-you", protectRoute, requireAdmin, getMadeForYou);
-router.get("/trending", protectRoute, requireAdmin, getTrending);
+router.get("/feature", protectRoute, getFeatureSongs);
+router.get("/made-for-you", protectRoute, getMadeForYou);
+router.get("/trending", protectRoute, getTrending);
 export default router;

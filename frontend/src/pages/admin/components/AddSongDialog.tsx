@@ -34,7 +34,7 @@ const AddSongDialog = () => {
             const formDate = new FormData();
             formDate.append("title", newSong.title);
             formDate.append("artist", newSong.artist);
-            formDate.append("albumId", newSong.albumId);
+            if(newSong.albumId && newSong.albumId !== "none") formDate.append("albumId", newSong.albumId);
             formDate.append("duration", newSong.duration);
             formDate.append("audioFile", files.audio);
             formDate.append("imageFile", files.image);
